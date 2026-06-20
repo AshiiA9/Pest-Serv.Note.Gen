@@ -1,823 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pest Tech Notes Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pest Tech End-of-Day Notes</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-:root{
-  --pink:#df4fa3;
-  --blue:#4da3e8;
-  --dark:#202124;
-  --muted:#6f6f6f;
-  --bg:#f7f7f7;
-  --card:#ffffff;
-  --soft:#f4f2f3;
-  --border:#f4cce4;
-}
-
+:root{--blue:#0ea5e9;--pink:#ec4899;--bg:#f4f8fc;--card:#fff;--text:#1f2937;--border:#dbe4ee}
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  background:var(--bg);
-  color:var(--dark);
-  padding-bottom:24px;
-}
-
-.app{
-  max-width:820px;
-  margin:0 auto;
-  padding:14px 10px;
-}
-
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  margin:12px 0 16px;
-}
-
-.logo{
-  width:36px;
-  height:50px;
-  border:2px solid #111;
-  background:#d9f2ff;
-  border-radius:4px;
-}
-
-.header h1{
-  font-size:28px;
-  line-height:1;
-  margin:0;
-  font-weight:800;
-}
-
-.card{
-  background:var(--card);
-  border-radius:18px;
-  padding:14px;
-  margin:0 0 12px;
-  box-shadow:0 4px 12px rgba(0,0,0,.05);
-}
-
-.section-title{
-  color:var(--pink);
-  font-size:17px;
-  letter-spacing:.6px;
-  text-transform:uppercase;
-  font-weight:800;
-  margin:0 0 10px;
-}
-
-.section-title.blue{color:var(--blue)}
-
-select, textarea, input{
-  width:100%;
-  border:none;
-  outline:none;
-  background:var(--soft);
-  border-radius:16px;
-  padding:12px 14px;
-  font-size:17px;
-  color:#222;
-}
-
-textarea{
-  min-height:78px;
-  resize:vertical;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  column-gap:12px;
-  row-gap:9px;
-}
-
-.option{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:16px;
-  cursor:pointer;
-  user-select:none;
-  min-height:32px;
-}
-
-.circle{
-  width:21px;
-  height:21px;
-  border:2px solid var(--pink);
-  border-radius:50%;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:14px;
-  font-weight:900;
-  flex:0 0 auto;
-}
-
-.option.selected .circle{
-  background:var(--pink);
-}
-
-.option.selected .circle::after{
-  content:"✓";
-}
-
-.btn{
-  width:100%;
-  border:none;
-  border-radius:17px;
-  padding:16px 14px;
-  font-size:21px;
-  font-weight:800;
-  color:white;
-  background:var(--blue);
-  border:2px solid var(--pink);
-  box-shadow:0 4px 9px rgba(0,0,0,.1);
-  cursor:pointer;
-  margin:0 0 12px;
-}
-
-.btn.pink{
-  background:var(--pink);
-  border-color:var(--pink);
-  margin:12px 0 0;
-  font-size:17px;
-  padding:14px;
-}
-
-.result-card{
-  display:none;
-  background:#fff8fc;
-  border:2px solid var(--border);
-  border-radius:18px;
-  padding:16px;
-  margin-top:14px;
-}
-
-.result-card h2{
-  color:var(--pink);
-  text-transform:uppercase;
-  letter-spacing:.6px;
-  margin:0 0 12px;
-  font-size:18px;
-}
-
-.result-text{
-  white-space:pre-wrap;
-  font-size:17px;
-  line-height:1.42;
-}
-  .material-wrap{
-  position:relative;
-}
-
-.search-box{
-  margin-bottom:8px;
-}
-
-.suggestions{
-  display:none;
-  max-height:180px;
-  overflow:auto;
-  background:white;
-  border:1px solid #e7e7e7;
-  border-radius:14px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-  margin-top:6px;
-}
-
-.suggestion{
-  padding:10px 12px;
-  font-size:15px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-
-.suggestion:last-child{
-  border-bottom:none;
-}
-
-.selected-tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-top:8px;
-}
-
-.tag{
-  background:#faf6ff;
-  color:#7c2bd9;
-  border:1px solid #e4d2ff;
-  border-radius:999px;
-  padding:6px 10px;
-  font-size:14px;
-  font-weight:700;
-}
-
-.tag span{
-  margin-left:6px;
-  color:#d62883;
-  cursor:pointer;
-}
-
-.small-note{
-  font-size:13px;
-  color:var(--muted);
-  margin-top:6px;
-}
-
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+.header{background:linear-gradient(135deg,var(--blue),var(--pink));color:white;padding:26px 18px}
+.header h1{margin:0;font-size:26px}.header p{margin:8px 0 0}
+.container{max-width:950px;margin:auto;padding:15px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px}
+.tab-btn{padding:14px;border-radius:14px;border:2px solid var(--border);background:white;font-weight:800;font-size:16px}
+.tab-btn.active{background:linear-gradient(135deg,var(--blue),var(--pink));color:white;border:none}
+.tab{display:none}.tab.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:15px;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+h2{margin-top:0}
+input[type=file]{width:100%;padding:14px;border:2px dashed var(--border);border-radius:12px}
+textarea{width:100%;min-height:210px;padding:14px;border-radius:12px;border:1px solid var(--border);font-size:16px}
+.btn{width:100%;margin-top:10px;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;font-size:17px;font-weight:800}
+.status{font-weight:700;color:#8b5cf6;margin-top:10px}
+.check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.check-item{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f9fbfd}
+@media(max-width:700px){.tabs,.check-grid{grid-template-columns:1fr}}
 </style>
 </head>
 
 <body>
-
-<div class="app">
-
 <div class="header">
-  <div class="logo"></div>
-  <h1>Pest Tech Notes Pro</h1>
+<h1>Pest Tech End-of-Day Notes</h1>
+<p>Upload GorillaDesk screenshots → OCR → generate service list, office notes, EOD note, and truck needs.</p>
+</div>
+
+<div class="container">
+
+<div class="tabs">
+<button class="tab-btn active" onclick="showTab('route',this)">End-of-Day</button>
+<button class="tab-btn" onclick="showTab('office',this)">Office / Concerns</button>
+<button class="tab-btn" onclick="showTab('supplies',this)">Truck Needs</button>
+</div>
+
+<div id="route" class="tab active">
+<div class="card">
+<h2>End-of-Day Route / Service Notes Screenshots</h2>
+<p>Upload in pairs: Job Details screenshot first, then Service Notes screenshot for that same customer. Use ** for recommendation and *** for recommendation + monitoring note.</p>
+<input id="routeUpload" type="file" accept="image/*" multiple>
+<button class="btn" onclick="runRouteOCR()">Extract Route Stops</button>
+<div id="routeStatus" class="status"></div>
 </div>
 
 <div class="card">
-  <h2 class="section-title">Customer Contact</h2>
-  <select id="contact">
-    <option>No Answer</option>
-    <option>Spoke with Customer</option>
-    <option>Texted Customer</option>
-    <option>Left Voicemail</option>
-    <option>Customer Not Home</option>
-  </select>
+<h2>Review Route OCR Text</h2>
+<textarea id="routeOCRText"></textarea>
+<button class="btn" onclick="generateRouteNote()">Generate End-of-Day / Office Notes</button>
 </div>
 
 <div class="card">
-  <h2 class="section-title">Service Type</h2>
-  <div class="grid" id="serviceType">
-    <div class="option" data-value="General Pest"><span class="circle"></span>General Pest</div>
-    <div class="option" data-value="Mosquito"><span class="circle"></span>Mosquito</div>
-    <div class="option" data-value="Carpenter Ant"><span class="circle"></span>Carpenter Ant</div>
-    <div class="option" data-value="Fire Ant"><span class="circle"></span>Fire Ant</div>
-    <div class="option" data-value="Rodent"><span class="circle"></span>Rodent</div>
-    <div class="option" data-value="Termite"><span class="circle"></span>Termite</div>
-    <div class="option" data-value="Exterior Only"><span class="circle"></span>Exterior Only</div>
-  </div>
+<h2>Service List</h2>
+<textarea id="serviceListOutput"></textarea>
+<button class="btn" onclick="copyText('serviceListOutput')">Copy Service List</button>
 </div>
 
 <div class="card">
-  <h2 class="section-title blue">Target Pest(s)</h2>
-
-  <div class="material-wrap">
-
-    <input
-      id="pestSearch"
-      class="search-box"
-      placeholder="Search pests..."
-      autocomplete="off"
-    >
-
-    <div id="pestSuggestions" class="suggestions"></div>
-
-    <div id="selectedPests" class="selected-tags"></div>
-
-  </div>
-
-  <div class="small-note">
-    Select all observed pests. Multiple selections allowed.
-  </div>
-
+<h2>Office Notes From Service Notes</h2>
+<textarea id="routeOfficeOutput"></textarea>
+<button class="btn" onclick="copyText('routeOfficeOutput')">Copy Office Notes</button>
 </div>
 
 <div class="card">
-  <h2 class="section-title blue">Severity</h2>
-
-  <div class="grid" id="severity">
-    <div class="option" data-value="Low"><span class="circle"></span>Low</div>
-    <div class="option" data-value="Moderate"><span class="circle"></span>Moderate</div>
-    <div class="option" data-value="Heavy"><span class="circle"></span>Heavy</div>
-  </div>
+<h2>End-of-Day Note</h2>
+<textarea id="routeOutput"></textarea>
+<button class="btn" onclick="copyText('routeOutput')">Copy End-of-Day Note</button>
 </div>
-<div class="card">
-  <h2 class="section-title blue">Interior Areas Treated</h2>
+</div>
 
-  <div class="grid" id="interiorAreas">
-    <div class="option" data-value="Kitchen"><span class="circle"></span>Kitchen</div>
-    <div class="option" data-value="Bathroom"><span class="circle"></span>Bathroom</div>
-    <div class="option" data-value="Bedroom"><span class="circle"></span>Bedroom</div>
-    <div class="option" data-value="Garage"><span class="circle"></span>Garage</div>
-    <div class="option" data-value="Basement"><span class="circle"></span>Basement</div>
-    <div class="option" data-value="Laundry Room"><span class="circle"></span>Laundry Room</div>
-    <div class="option" data-value="Attic"><span class="circle"></span>Attic</div>
-    <div class="option" data-value="Entry Points"><span class="circle"></span>Entry Points</div>
-    <div class="option" data-value="Cracks & Crevices"><span class="circle"></span>Cracks & Crevices</div>
-    <div class="option" data-value="Utility Penetrations"><span class="circle"></span>Utility Penetrations</div>
-  </div>
+<div id="office" class="tab">
+<div class="card">
+<h2>Customer Concerns / Notes Screenshots</h2>
+<p>Upload Job Details screenshot first, then Notes screenshot for that same customer. Repeat for each customer.</p>
+<input id="concernUpload" type="file" accept="image/*" multiple>
+<button class="btn" onclick="runConcernOCR()">Extract Customer Concerns</button>
+<div id="concernStatus" class="status"></div>
 </div>
 
 <div class="card">
-  <h2 class="section-title blue">Exterior Areas Treated</h2>
-
-  <div class="grid" id="exteriorAreas">
-    <div class="option" data-value="Foundation"><span class="circle"></span>Foundation</div>
-    <div class="option" data-value="Entry Points"><span class="circle"></span>Entry Points</div>
-    <div class="option" data-value="Eaves"><span class="circle"></span>Eaves</div>
-    <div class="option" data-value="Perimeter"><span class="circle"></span>Perimeter</div>
-    <div class="option" data-value="Mulch Beds"><span class="circle"></span>Mulch Beds</div>
-    <div class="option" data-value="Landscaping"><span class="circle"></span>Landscaping</div>
-    <div class="option" data-value="Deck"><span class="circle"></span>Deck</div>
-    <div class="option" data-value="Patio"><span class="circle"></span>Patio</div>
-    <div class="option" data-value="Fence Line"><span class="circle"></span>Fence Line</div>
-    <div class="option" data-value="Yard Perimeter"><span class="circle"></span>Yard Perimeter</div>
-  </div>
+<h2>Review Concern OCR Text</h2>
+<textarea id="concernOCRText"></textarea>
+<button class="btn" onclick="generateOfficeNote()">Generate Office Note</button>
 </div>
 
 <div class="card">
-  <h2 class="section-title">Activity Found</h2>
-
-  <div class="grid" id="activityFound">
-    <div class="option" data-value="None"><span class="circle"></span>None</div>
-    <div class="option" data-value="General Pest Activity"><span class="circle"></span>General Pest Activity</div>
-    <div class="option" data-value="Ant Activity"><span class="circle"></span>Ant Activity</div>
-    <div class="option" data-value="Spider Activity"><span class="circle"></span>Spider Activity</div>
-    <div class="option" data-value="Roach Activity"><span class="circle"></span>Roach Activity</div>
-    <div class="option" data-value="Wasp Activity"><span class="circle"></span>Wasp Activity</div>
-    <div class="option" data-value="Rodent Activity"><span class="circle"></span>Rodent Activity</div>
-    <div class="option" data-value="Webbing Present"><span class="circle"></span>Webbing Present</div>
-    <div class="option" data-value="Mud Tubes"><span class="circle"></span>Mud Tubes</div>
-    <div class="option" data-value="Moisture Conditions"><span class="circle"></span>Moisture Conditions</div>
-  </div>
+<h2>Customer Concerns</h2>
+<textarea id="customerConcernOutput"></textarea>
+<button class="btn" onclick="copyText('customerConcernOutput')">Copy Customer Concerns</button>
 </div>
 
 <div class="card">
-  <h2 class="section-title blue">Customer Concern / Details</h2>
-
-  <textarea
-    id="concern"
-    placeholder="Customer concerns, observations, recommendations, follow-up notes..."
-  ></textarea>
+<h2>Office Note</h2>
+<textarea id="officeOutput"></textarea>
+<button class="btn" onclick="copyText('officeOutput')">Copy Office Note</button>
 </div>
-
+</div><div id="supplies" class="tab">
 <div class="card">
-  <h2 class="section-title blue">Materials Used</h2>
+<h2>Truck Needs / Supplies Low</h2>
 
-  <div class="material-wrap">
-
-    <input
-      id="materialSearch"
-      class="search-box"
-      placeholder="Search materials..."
-      autocomplete="off"
-    >
-
-    <div id="materialSuggestions" class="suggestions"></div>
-
-    <div id="selectedMaterials" class="selected-tags"></div>
-
-  </div>
-
-  <div class="small-note">
-    Select all materials used during service.
-  </div>
+<div class="check-grid">
+<div class="check-item"><label><input type="checkbox" value="Alpine WSG"> Alpine WSG</label></div>
+<div class="check-item"><label><input type="checkbox" value="CrossCheck Plus"> CrossCheck Plus</label></div>
+<div class="check-item"><label><input type="checkbox" value="Bifen XTS"> Bifen XTS</label></div>
+<div class="check-item"><label><input type="checkbox" value="Bifen I/T"> Bifen I/T</label></div>
+<div class="check-item"><label><input type="checkbox" value="Taurus SC"> Taurus SC</label></div>
+<div class="check-item"><label><input type="checkbox" value="Termidor SC"> Termidor SC</label></div>
+<div class="check-item"><label><input type="checkbox" value="Termidor HE"> Termidor HE</label></div>
+<div class="check-item"><label><input type="checkbox" value="Gentrol IGR"> Gentrol IGR</label></div>
+<div class="check-item"><label><input type="checkbox" value="CrossFire"> CrossFire</label></div>
+<div class="check-item"><label><input type="checkbox" value="Final Bait Blox"> Final Bait Blox</label></div>
+<div class="check-item"><label><input type="checkbox" value="Rodent Bait Stations"> Rodent Bait Stations</label></div>
+<div class="check-item"><label><input type="checkbox" value="Trelona ATBS"> Trelona ATBS</label></div>
+<div class="check-item"><label><input type="checkbox" value="In2Mix Packets"> In2Mix Packets</label></div>
+<div class="check-item"><label><input type="checkbox" value="Mouse Sticky Traps"> Mouse Sticky Traps</label></div>
+<div class="check-item"><label><input type="checkbox" value="T-Rex Snap Traps"> T-Rex Snap Traps</label></div>
+<div class="check-item"><label><input type="checkbox" value="Tri-Die / Tri-Dust"> Tri-Die / Tri-Dust</label></div>
+<div class="check-item"><label><input type="checkbox" value="Wasp & Hornet Spray"> Wasp & Hornet Spray</label></div>
 </div>
 
-<button class="btn" onclick="generateNote()">
-  Generate Service Note
-</button>
-
-<div class="result-card" id="noteCard">
-  <h2>Service Note</h2>
-  <div id="serviceNote" class="result-text"></div>
-
-  <button class="btn pink" onclick="copyText('serviceNote')">
-    Copy Service Note
-  </button>
+<textarea id="extraSupplies" placeholder="Add anything else here, one item per line."></textarea>
+<button class="btn" onclick="generateSupplyNote()">Generate Truck Needs Note</button>
+<textarea id="supplyOutput"></textarea>
+<button class="btn" onclick="copyText('supplyOutput')">Copy Truck Needs Note</button>
+</div>
 </div>
 
-<div class="result-card" id="rationaleCard">
-  <h2>Product Rationale</h2>
-  <div id="rationaleNote" class="result-text"></div>
-
-  <button class="btn pink" onclick="copyText('rationaleNote')">
-    Copy Product Rationale
-  </button>
-
-  <button class="btn pink" onclick="copyEverything()">
-    Copy Everything
-  </button>
 </div>
 
 <script>
+let routeStops=[];
+let routeOfficeNotes=[];
 
-const pests = [
-
-  // Ants
-  "Carpenter Ant",
-  "Odorous House Ant",
-  "Pavement Ant",
-  "Fire Ant",
-
-  // Roaches
-  "German Cockroach",
-  "American Cockroach",
-  "Oriental Cockroach",
-  "Brown-Banded Cockroach",
-
-  // Spiders
-  "Wolf Spider",
-  "House Spider",
-  "Cellar Spider",
-  "Brown Recluse",
-  "Black Widow",
-
-  // Stinging
-  "Paper Wasp",
-  "Yellowjacket",
-  "Bald-Faced Hornet",
-  "Mud Dauber",
-  "Carpenter Bee",
-  "Ground Nesting Bee",
-
-  // Occasional Invaders
-  "Stink Bug",
-  "Asian Lady Beetle",
-  "Boxelder Bug",
-  "Earwig",
-  "Millipede",
-  "Centipede",
-  "Clover Mite",
-
-  // Rodents
-  "House Mouse",
-  "Norway Rat",
-  "Roof Rat",
-
-  // Termites
-  "Subterranean Termite",
-  "Powderpost Beetle",
-
-  // Flying
-  "Mosquito",
-  "House Fly",
-  "Drain Fly",
-  "Cluster Fly"
-
+const services=[
+"Quarterly Gen Pest Service Subscription Customer","Call Back Service","Roach Treatment","Yard Treatment",
+"General Pest","Mosquito Service","Mosquito","Rodent Service","Rodent","Quarterly Service","Monthly Service",
+"Bi-Monthly Service","Initial Booking","Initial Service","Subscription Payment","Termite Service","Termite",
+"Bed Bug Service","Bed Bug","Inspection","Callback","Ants"
 ];
 
-const selectedPests = new Set();
-  const materials = [
-  "565 Aerosol 2.5%",
-  "Advance Disk bait .011%",
-  "Alpine Fly Spray Dinotefuran 1.0%",
-  "Alpine Dust .05%",
-  "Alpine WSG .1%",
-  "Alpine WSG .2%",
-  "Alpine WSG .3%",
-  "Bifen I/T",
-  "Bifen XTS",
-  "Biffen",
-  "Bora-Care",
-  "CB-80",
-  "Contrac Blox - Rodent Bait .005%",
-  "Cross Check Insecticide",
-  "Crosscheck Plus Multi insecticide",
-  "Crossfire Bedbug Concentrate",
-  "Cy-Kick Aerosol .1%",
-  "Cyper TC .25%",
-  "Cyzmic CS .06%",
-  "Delta Dust .05%",
-  "Essentria G Bait 3.5%",
-  "Essentria IC3",
-  "ExciteR 89459-41 .5%",
-  "Final Bait Block .005%",
-  "Gentrol EC3 89459-119 .015%",
-  "Gentrol IGR",
-  "In2Mix",
-  "InTice Ant Bait 3%",
-  "Maxforce Complete 1.%",
-  "Maxforce Complete Granules 1.0%",
-  "Maxforce Gel .05%",
-  "Mold Armor 4091-23",
-  "Niban",
-  "Orthen Crystals 1.%",
-  "Premise Foam .05%",
-  "Pro Control Pop Top aero 3.3%",
-  "Ridesco WG .15%",
-  "Suspend SC .03%",
-  "Talstar .02%",
-  "Taurus SC .03",
-  "Tengard SFR .05%",
-  "Termidor HE .06%",
-  "Termidor SC .06%",
-  "Terro PCO 5.4%",
-  "Trelona Compressed Termite Bait (Novaluron: 0.5%)",
-  "Tri Die Dust",
-  "Wasp Freeze",
-  "Wasp Freeze Aerosol .25%"
+const recommendationLibrary=[
+{keys:["leaf accumulation","leaf buildup","leaf build up","leaf litter","leaves around","heavy leaves","organic debris"],rec:"Remove accumulated leaves and organic debris from around the structure to reduce moisture retention and pest harborage areas."},
+{keys:["stored debris","stored materials","excess storage","materials against structure","unused materials","items stored outside"],rec:"Remove or organize stored materials to reduce sheltered areas that may support pest activity."},
+{keys:["vegetation","shrubs touching","bushes touching","plants touching","overgrown vegetation","landscaping touching","vegetation too close"],rec:"Trim vegetation away from the structure to improve airflow and reduce pest access routes."},
+{keys:["tree limbs","tree branches","host trees","branches over roof","limbs over roof","trees contacting"],rec:"Trim tree limbs away from the structure to reduce pest access routes and moisture retention."},
+{keys:["standing water","water pooling","water accumulation","pooled water","water holding"],rec:"Eliminate standing water sources to reduce mosquito breeding and moisture-related pest activity."},
+{keys:["poor drainage","drainage issue","water runoff","water collecting","poor grade"],rec:"Improve drainage around the structure to reduce excessive moisture conditions that may support pest activity."},
+{keys:["leaking water","water leak","spigot leak","hose bib leak","plumbing leak","dripping water"],rec:"Repair leaking water sources to eliminate moisture conditions favorable to pest activity."},
+{keys:["trash buildup","trash accumulation","garbage accumulation","overflowing trash","waste accumulation"],rec:"Maintain covered waste containers and remove accumulated waste materials to reduce pest attractants."},
+{keys:["firewood","wood pile","wood stacked"],rec:"Store firewood elevated and away from the structure to reduce pest harborage."},
+{keys:["cardboard","cardboard storage","stored cardboard","cardboard boxes"],rec:"Reduce cardboard storage where practical and keep stored materials elevated to limit pest harborage."},
+{keys:["moisture","excess moisture","high moisture","damp conditions","moist conditions"],rec:"Reduce excess moisture through ventilation, drainage improvements, and corrective repairs where needed."},
+{keys:["foundation gap","entry point","exterior gap","utility gap","gap around"],rec:"Seal accessible entry points and exterior gaps to reduce pest entry opportunities."},
+{keys:["mulch","deep mulch","mulch against foundation","mulch touching"],rec:"Keep mulch pulled back from the foundation and avoid excessive mulch depth to reduce moisture retention and pest harborage."},
+{keys:["gutter","gutters","downspout","clogged gutters","overflowing gutters"],rec:"Clean gutters and direct downspouts away from the structure to reduce moisture accumulation near the foundation."},
+{keys:["crawlspace","crawl space","crawlspace moisture","wet crawlspace"],rec:"Address crawlspace moisture through proper ventilation, drainage correction, and moisture management where needed."},
+{keys:["pet food","food left outside","outdoor pet food"],rec:"Avoid leaving pet food outdoors for extended periods and store food in sealed containers."},
+{keys:["bird feeder","bird seed","spilled bird seed"],rec:"Keep bird feeding areas clean and remove spilled seed regularly to reduce rodent and insect attractants."},
+{keys:["neighbor","infested neighbors","neighbor infestation","adjacent infestation"],rec:"Continue monitoring and maintain exterior preventive measures due to nearby pest pressure."}
 ];
 
-const selectedMaterials = new Set();
-
-function setupOptions(){
-  document.querySelectorAll(".option").forEach(option=>{
-    option.addEventListener("click",()=>{
-      const parent = option.parentElement.id;
-
-      if(parent === "severity"){
-        document.querySelectorAll("#severity .option").forEach(o=>o.classList.remove("selected"));
-      }
-
-      option.classList.toggle("selected");
-    });
-  });
+function showTab(id,btn){
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+btn.classList.add("active");
 }
 
-function getSelected(id){
-  return Array.from(document.querySelectorAll(`#${id} .option.selected`))
-    .map(el=>el.dataset.value);
+async function ocrFiles(inputId,statusId,prefix){
+const files=document.getElementById(inputId).files;
+const status=document.getElementById(statusId);
+if(!files.length){status.textContent="Upload screenshots first.";return "";}
+let allText="";
+status.textContent="Starting OCR...";
+for(let i=0;i<files.length;i++){
+status.textContent=`Reading screenshot ${i+1} of ${files.length}...`;
+const result=await Tesseract.recognize(files[i],"eng",{logger:m=>{
+if(m.status==="recognizing text"){status.textContent=`Reading screenshot ${i+1} of ${files.length}: ${Math.round(m.progress*100)}%`;}
+}});
+allText+=`\n\n###${prefix}_${i+1}###\n`;
+allText+=result.data.text;
+}
+status.textContent="OCR complete. Review text, then generate note.";
+return cleanOCR(allText);
 }
 
-function listText(arr){
-  return arr.length ? arr.join(", ") : "None";
+async function runRouteOCR(){
+document.getElementById("routeOCRText").value=await ocrFiles("routeUpload","routeStatus","ROUTE");
+generateRouteNote();
 }
 
-function fuzzyMatch(search, item){
-  const s = search.toLowerCase().trim();
-  const i = item.toLowerCase();
-
-  if(!s) return false;
-  if(i.includes(s)) return true;
-
-  const words = s.split(/\s+/);
-
-  return words.every(word=>{
-    if(i.includes(word)) return true;
-    if(word.length < 3) return false;
-
-    let matches = 0;
-    for(let char of word){
-      if(i.includes(char)) matches++;
-    }
-
-    return matches / word.length >= 0.75;
-  });
+async function runConcernOCR(){
+document.getElementById("concernOCRText").value=await ocrFiles("concernUpload","concernStatus","CONCERN");
+generateOfficeNote();
 }
 
-function setupSearch(inputId, suggestionId, sourceList, selectedSet, renderFn){
-  const input = document.getElementById(inputId);
-  const suggestions = document.getElementById(suggestionId);
-
-  input.addEventListener("input",()=>{
-    const search = input.value;
-    suggestions.innerHTML = "";
-
-    if(!search.trim()){
-      suggestions.style.display = "none";
-      return;
-    }
-
-    const matches = sourceList
-      .filter(item=>fuzzyMatch(search,item))
-      .slice(0,10);
-
-    if(!matches.length){
-      suggestions.style.display = "none";
-      return;
-    }
-
-    matches.forEach(item=>{
-      const div = document.createElement("div");
-      div.className = "suggestion";
-      div.textContent = selectedSet.has(item) ? `✓ ${item}` : item;
-      div.onclick = ()=>{
-        selectedSet.add(item);
-        input.value = "";
-        suggestions.style.display = "none";
-        renderFn();
-      };
-      suggestions.appendChild(div);
-    });
-
-    suggestions.style.display = "block";
-  });
+function cleanOCR(text){
+return text.replace(/[|]/g," ").replace(/\r/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
 }
 
-function renderTags(containerId, selectedSet){
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
-
-  Array.from(selectedSet).forEach(item=>{
-    const tag = document.createElement("div");
-    tag.className = "tag";
-    tag.innerHTML = `${item}<span>×</span>`;
-    tag.onclick = ()=>{
-      selectedSet.delete(item);
-      renderTags(containerId, selectedSet);
-    };
-    container.appendChild(tag);
-  });
+function blocksFrom(text,prefix){
+return text.split(new RegExp("###"+prefix+"_\\d+###","i")).map(x=>x.trim()).filter(Boolean);
 }
 
-function renderPestTags(){
-  renderTags("selectedPests", selectedPests);
+function cleanLine(line){
+return line.replace(/[<>£©]/g,"").replace(/\s+/g," ").trim();
 }
 
-function renderMaterialTags(){
-  renderTags("selectedMaterials", selectedMaterials);
+function isPhoneLine(line){
+return /(\+?1[\s.-]?)?$begin:math:text$\?\\d\{3\}$end:math:text$?[\s.-]*\d{3}[\s.-]*\d{4}/.test(line);
 }
 
-document.addEventListener("click", e=>{
-  if(!e.target.closest(".material-wrap")){
-    document.querySelectorAll(".suggestions").forEach(s=>s.style.display="none");
-  }
-});function generateNote(){
-  const contact = document.getElementById("contact").value;
-  const service = getSelected("serviceType");
-  const severity = getSelected("severity");
-  const interior = getSelected("interiorAreas");
-  const exterior = getSelected("exteriorAreas");
-  const activity = getSelected("activityFound");
-  const concern = document.getElementById("concern").value.trim();
-
-  const pestsUsed = Array.from(selectedPests);
-  const materialsUsed = Array.from(selectedMaterials);
-
-  const serviceText = service.length ? service.join(", ") : "General Pest";
-  const severityText = severity.length ? severity[0] : "Not specified";
-
-  let note =
-`-Knocked: ${contact}
-
--Notes:
-Service type: ${serviceText}. Target pest(s): ${listText(pestsUsed)}. Severity: ${severityText}. Interior treatment performed at: ${listText(interior)}. Exterior treatment performed at: ${listText(exterior)}. Activity found: ${listText(activity)}. Materials applied are documented in the Materials section. Service completed and customer advised to allow treated areas to dry before re-entry if applicable.`;
-
-  if(concern){
-    note += `
-
--Customer Concern:
-${concern}`;
-  }
-
-  document.getElementById("serviceNote").textContent = note;
-  document.getElementById("noteCard").style.display = "block";
-
-  document.getElementById("rationaleNote").textContent =
-    buildRationale(pestsUsed, materialsUsed, severityText, interior, exterior, activity);
-
-  document.getElementById("rationaleCard").style.display = "block";
-  document.getElementById("noteCard").scrollIntoView({behavior:"smooth"});
+function isEmailLine(line){
+return /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(line);
 }
 
-function buildRationale(pestsUsed, materialsUsed, severity, interior, exterior, activity){
-  if(!pestsUsed.length && !materialsUsed.length){
-    return "Select at least one target pest and one material to generate a product rationale.";
-  }
-
-  if(!materialsUsed.length){
-    return "No materials were selected. Select the products used to generate a professional product rationale.";
-  }
-
-  if(!pestsUsed.length){
-    return materialsUsed.map(material=>{
-      return `${material}
-${getMaterialRationale(material, "general pest activity", severity, interior, exterior)}`;
-    }).join("\n\n");
-  }
-
-  let output = `Target pest(s): ${pestsUsed.join(", ")}
-Severity: ${severity}
-
-`;
-
-  materialsUsed.forEach(material=>{
-    output += `${material}
-`;
-
-    pestsUsed.forEach(pest=>{
-      output += `- ${pest}: ${getMaterialRationale(material, pest, severity, interior, exterior)}
-`;
-    });
-
-    output += "\n";
-  });
-
-  return output.trim();
+function isTimeLine(line){
+return /\d{1,2}:\d{2}\s?(AM|PM)/i.test(line);
 }
 
-function getMaterialRationale(material, pest, severity, interior, exterior){
-  const m = material.toLowerCase();
-  const p = pest.toLowerCase();
+function cleanCustomerName(name){
+name=String(name||"").trim();
+name=name.replace(/^$begin:math:text$\[\^\)\]\{1\,6\}$end:math:text$\s*/,"");
+name=name.replace(/^(oO|OO|0O|vr|v r|vv|nr|or)\s+/i,"");
+name=name.replace(/^[^A-Za-z]+/,"");
+name=name.replace(/\s+/g," ");
+return name.trim();
+}function isJunk(line){
+const l=line.toLowerCase();
+return !line ||
+l.includes("new feature") || l.includes("tipping") || l.includes("learn more") ||
+l.includes("microphone") || l.includes("job details") || l.includes("confirmed") ||
+l.includes("time window") || l.includes("show change logs") || l.includes("attach a photo") ||
+l.includes("top note") || l.includes("todo list") || l.includes("this note will appear") ||
+l.includes("mobile") || l.includes("phone") || l.includes("email") ||
+isPhoneLine(line) || isEmailLine(line);
+}
 
-  const areaText = [...interior, ...exterior].length
-    ? [...interior, ...exterior].join(", ")
-    : "documented treatment areas";
+function extractTimes(block){
+const matches=block.match(/\d{1,2}:\d{2}\s?(?:AM|PM)/gi)||[];
+return [...new Set(matches.map(t=>t.toUpperCase().replace(/\s+/g," ")))];
+}
 
-  if(m.includes("alpine wsg")){
-    if(p.includes("ant")){
-      return `Alpine WSG was selected because dinotefuran is a non-repellent active ingredient. For ant activity, this allows foraging ants to move through treated areas without immediate avoidance, improving exposure along trails, entry points, and harborage areas. This supports better colony-level control when applied according to label directions.`;
-    }
-    if(p.includes("roach") || p.includes("cockroach")){
-      return `Alpine WSG was selected because non-repellent chemistry is useful where cockroaches travel through cracks, crevices, and harborage areas. It helps provide residual control without relying only on visible contact.`;
-    }
-    return `Alpine WSG was selected as a non-repellent residual treatment for listed pests in ${areaText}. It is a good choice when pests are using cracks, entry points, and hidden travel routes.`;
-  }
+function extractCustomer(block){
+const lines=block.split("\n").map(cleanLine).filter(Boolean);
+let phoneIndex=-1;
+let emailIndex=-1;
 
-  if(m.includes("taurus") || m.includes("termidor")){
-    if(p.includes("termite")){
-      return `This product was selected because fipronil is a non-repellent active ingredient used in termite management. Non-repellent treatments are useful because termites do not readily detect treated areas, allowing contact and transfer through normal movement when applied according to label directions.`;
-    }
-    if(p.includes("ant")){
-      return `This product was selected because fipronil is a non-repellent active ingredient. For ant activity, non-repellent treatments help avoid scattering the colony and support transfer among foraging ants and nestmates.`;
-    }
-    return `This product was selected because fipronil provides non-repellent residual control for labeled pests when applied to appropriate exterior or structural treatment areas.`;
-  }
+for(let i=0;i<lines.length;i++){
+if(isPhoneLine(lines[i])){phoneIndex=i;break;}
+if(isEmailLine(lines[i])){emailIndex=i;break;}
+}
 
-  if(m.includes("crosscheck") || m.includes("bifen") || m.includes("talstar")){
-    if(p.includes("spider")){
-      return `Selected as a residual perimeter treatment to reduce spider pressure around the structure. Treating eaves, entry points, foundation areas, and web-prone locations helps reduce insect prey and spider activity.`;
-    }
-    if(p.includes("wasp") || p.includes("hornet") || p.includes("yellowjacket")){
-      return `Selected for exterior residual control in areas where stinging insects may land, rest, or enter. This supports control around eaves, entry points, and exterior harborage areas.`;
-    }
-    return `Selected as a residual pyrethroid treatment for exterior foundation, perimeter, entry point, and harborage areas. This helps reduce pest pressure around the structure and limit future entry.`;
-  }
+let targetIndex=phoneIndex>0 ? phoneIndex-1 : emailIndex>0 ? emailIndex-1 : -1;
 
-  if(m.includes("gentrol")){
-    if(p.includes("roach") || p.includes("cockroach")){
-      return `Gentrol was selected as an insect growth regulator to help disrupt cockroach development. This helps reduce future populations by preventing immature insects from developing normally and reproducing.`;
-    }
-    return `Gentrol was selected as an insect growth regulator to help reduce future pest pressure by interrupting normal insect development.`;
-  }
+if(targetIndex>=0){
+let customer=lines[targetIndex];
 
-  if(m.includes("niban") || m.includes("intice") || m.includes("advance") || m.includes("maxforce complete")){
-    if(p.includes("ant")){
-      return `Selected as a bait treatment for foraging ants. Bait is useful because ants collect the material and share it with nestmates, supporting control beyond only the visible ants.`;
-    }
-    if(p.includes("roach") || p.includes("cockroach")){
-      return `Selected as a bait treatment for cockroach activity. Baits place control directly in feeding and harborage areas while limiting broad surface application.`;
-    }
-    return `Selected as a bait treatment for foraging pests in documented activity areas.`;
-  }
+for(let i=targetIndex;i>=0;i--){
+const possible=lines[i];
+const p=possible.toLowerCase();
+if(isJunk(possible)) continue;
+if(services.some(s=>p.includes(s.toLowerCase()))) continue;
+if(isTimeLine(possible)) continue;
+if(possible.length<3 || possible.length>70) continue;
+customer=possible;
+break;
+}
 
-  if(m.includes("maxforce gel")){
-    return `Selected as a targeted gel bait for cracks, crevices, and active foraging areas. Gel bait is useful where pests are feeding or traveling and allows precise placement.`;
-  }
+return cleanCustomerName(customer);
+}
 
-  if(m.includes("crossfire")){
-    return `Selected for bed bug treatment because it is designed for direct and residual control of bed bugs on labeled areas such as cracks, crevices, seams, tufts, bed frames, and harborage points.`;
-  }
+return "";
+}
 
-  if(m.includes("wasp freeze")){
-    return `Selected for wasp or stinging insect activity because it provides fast knockdown and helps address active nests or pressure around eaves, entry points, and exterior areas.`;
-  }
+function extractService(block){
+const lines=block.split("\n").map(cleanLine).filter(Boolean);
+let emailIndex=-1;
 
-  if(m.includes("contrac") || m.includes("final bait")){
-    return `Selected as a rodent bait for rodent activity or monitoring. Rodent bait should be secured in bait stations and used according to label directions to help reduce rodent pressure around the property.`;
-  }
+for(let i=0;i<lines.length;i++){
+if(isEmailLine(lines[i])){emailIndex=i;break;}
+}
 
-  if(m.includes("trelona")){
-    return `Selected as a termite bait because novaluron interferes with termite development and colony growth. This is appropriate for termite bait station programs when serviced according to label and company procedure.`;
-  }
+if(emailIndex>=0){
+let serviceLines=[];
 
-  if(m.includes("in2mix")){
-    return `Selected for mosquito service because it is designed for use in mosquito station programs and helps reduce mosquito breeding pressure around the property.`;
-  }
+for(let i=emailIndex+1;i<lines.length;i++){
+const line=lines[i];
+const lower=line.toLowerCase();
 
-  if(m.includes("delta dust") || m.includes("tri die") || m.includes("alpine dust")){
-    return `Selected for cracks, crevices, wall voids, and protected harborage areas where pests may hide or travel. Dust applications are useful in dry, hard-to-reach spaces.`;
-  }
+if(isTimeLine(line)) break;
+if(isJunk(line)) continue;
+if(lower.includes("address")) continue;
+if(lower.includes("phone")) continue;
+if(lower.includes("email")) continue;
 
-  if(m.includes("bora-care")){
-    return `Selected for wood-destroying insect or wood-protection situations because borate treatments are designed to protect wood from listed pests when applied according to label directions.`;
-  }
+serviceLines.push(line);
+}
 
-  return `Selected because it was appropriate for the documented pest activity, severity level, and treatment areas. Product was applied according to label directions and company procedures to help reduce current pest pressure and prevent future activity.`;
+const serviceText=serviceLines.join(" ").trim();
+
+if(serviceText){
+for(const s of services){
+if(serviceText.toLowerCase().includes(s.toLowerCase())) return s;
+}
+return serviceText;
+}
+}
+
+const lower=block.toLowerCase();
+for(const s of services){if(lower.includes(s.toLowerCase())) return s;}
+return "";
+}
+
+function getRecommendation(note){
+const lower=note.toLowerCase();
+for(const item of recommendationLibrary){
+for(const key of item.keys){
+if(lower.includes(key)) return item.rec;
+}
+}
+return "Continue reducing food, water, moisture, harborage, and exterior access points as part of an integrated pest management approach.";
+}
+
+function formatOfficeNoteLine(note){
+const wantsMonitoring=note.includes("***");
+const wantsRecommendation=note.includes("**") || wantsMonitoring;
+const cleanNote=note.replace(/\*\*\*/g,"").replace(/\*\*/g,"").trim();
+let output=`• ${cleanNote}\n`;
+
+if(wantsRecommendation){
+output+=`• Recommendation: ${getRecommendation(cleanNote)}\n`;
+}
+
+if(wantsMonitoring){
+output+=`• Monitoring Note: Continue monitoring this area for recurring conducive conditions and pest activity.\n`;
+}
+
+return output;
+}
+
+function extractServiceOfficeNotes(block){
+const lines=block.split("\n").map(cleanLine).filter(Boolean);
+const notes=[];
+let capture=false;
+
+for(const raw of lines){
+let line=raw.trim();
+let lower=line.toLowerCase();
+
+if(lower.includes("property estimation")) break;
+
+if(!capture && lower.includes("applicable")){
+capture=true;
+line=line.replace(/.*applicable[:\s-]*/i,"").trim();
+if(line && !isJunk(line)) notes.push(cleanConcernLine(line));
+continue;
+}
+
+if(capture){
+if(line.length>1 && line.length<220 && !isJunk(line)){
+notes.push(cleanConcernLine(line));
+}
+}
+}
+
+return [...new Set(notes)].filter(Boolean);
+}
+
+function buildRouteStops(){
+const text=document.getElementById("routeOCRText").value;
+const blocks=blocksFrom(text,"ROUTE");
+const stops=[];
+const seen=new Set();
+routeOfficeNotes=[];
+
+for(let i=0;i<blocks.length;i++){
+const block=blocks[i];
+
+if(!block.toLowerCase().includes("job details")) continue;
+
+const customer=extractCustomer(block);
+const service=extractService(block);
+const times=extractTimes(block);
+
+if(!customer || !service) continue;
+
+const timeKey=times.length?times.join("-"):"NO_TIME_"+i;
+const key=(customer+"|"+service+"|"+timeKey).toLowerCase();
+
+if(!seen.has(key)){
+stops.push({customer,service,times});
+seen.add(key);
+}
+
+if(blocks[i+1]){
+const noteBlock=blocks[i+1];
+const notes=extractServiceOfficeNotes(noteBlock);
+if(notes.length){
+routeOfficeNotes.push({customer,notes});
+}
+}
+}
+
+routeStops=stops;
+return stops;
+}
+
+function formatList(items){
+if(items.length===1) return items[0]+".";
+if(items.length===2) return items[0]+" and "+items[1]+".";
+return items.slice(0,-1).join(", ")+", and "+items[items.length-1]+".";
+}
+
+function generateRouteNote(){
+const stops=buildRouteStops();
+
+if(!stops.length){
+document.getElementById("routeOutput").value="No clean customer/service pairs were detected. Review the OCR text and try again.";
+document.getElementById("serviceListOutput").value="No service list detected.";
+document.getElementById("routeOfficeOutput").value="No office notes detected.";
+return;
+}
+
+document.getElementById("serviceListOutput").value=stops.map(s=>`${s.customer} - ${s.service}`).join("\n");
+document.getElementById("routeOutput").value=formatList(stops.map(s=>`${s.customer} – ${s.service}`));
+
+let officeOut="";
+for(const item of routeOfficeNotes){
+officeOut+=`${item.customer}\n`;
+item.notes.forEach(n=>officeOut+=formatOfficeNoteLine(n));
+officeOut+="\n";
+}
+document.getElementById("routeOfficeOutput").value=officeOut.trim() || "No office notes detected after applicable and before Property Estimation.";
+}
+
+function timeMatchScore(a,b){
+let score=0;
+for(const t of a){if(b.includes(t)) score++;}
+return score;
+}
+
+function matchCustomerByTimes(times){
+if(!routeStops.length) buildRouteStops();
+let best="Unknown Customer";
+let bestScore=0;
+for(const stop of routeStops){
+const score=timeMatchScore(times,stop.times||[]);
+if(score>bestScore){bestScore=score;best=stop.customer;}
+}
+return bestScore>=1 ? best : "Unknown Customer";
+}
+
+function looksLikeJobDetails(block){
+return block.toLowerCase().includes("job details") && extractCustomer(block);
+}
+
+function cleanConcernLine(line){
+return line.replace(/^[-•*·«»\s]+/,"").replace(/[«»]/g,"").replace(/\s+/g," ").trim();
+}
+
+function isConcernStopLine(line){
+const l=line.toLowerCase();
+return l.includes("property estimation") || l.includes("tasks") || l.includes("units") ||
+l.includes("invoice") || l.includes("draft") || l.includes("show change logs") ||
+l.includes("attach a photo") || l.includes("top note") || l.includes("todo list") ||
+l.includes("materials applied") || l.includes("service completed") || l.includes("service type") ||
+l.includes("ashton arellano") || l.includes("job details");
+}
+
+function extractCustomerConcernBoxOnly(block){
+const lines=block.split("\n").map(cleanLine).filter(Boolean);
+const concerns=[];
+let capture=false;
+
+for(const raw of lines){
+let line=raw.trim();
+let lower=line.toLowerCase();
+
+if(!capture && lower.includes("customer concern")){
+capture=true;
+line=line.replace(/[-•*·\s]*customer concern[s]?:?/i,"").trim();
+if(line && !isJunk(line) && !isConcernStopLine(line)) concerns.push(cleanConcernLine(line));
+continue;
+}
+
+if(capture){
+if(isConcernStopLine(line)) break;
+if(line.length>1 && line.length<180 && !isJunk(line)) concerns.push(cleanConcernLine(line));
+}
+}
+
+return [...new Set(concerns)].filter(Boolean);
+}
+
+function generateOfficeNote(){
+const text=document.getElementById("concernOCRText").value;
+const blocks=blocksFrom(text,"CONCERN");
+
+if(!blocks.length){
+document.getElementById("officeOutput").value="Upload concern/notes screenshots first.";
+document.getElementById("customerConcernOutput").value="Upload concern/notes screenshots first.";
+return;
+}
+
+let note="Customer Concerns / Office Follow-Up Items:\n\n";
+let concernOnly="";
+let found=false;
+
+for(let i=0;i<blocks.length;i++){
+let customer="";
+let noteBlock=blocks[i];
+
+if(looksLikeJobDetails(blocks[i])){
+customer=extractCustomer(blocks[i]);
+if(blocks[i+1]){noteBlock=blocks[i+1];i++;}
+}else{
+customer=matchCustomerByTimes(extractTimes(blocks[i]));
+}
+
+const concerns=extractCustomerConcernBoxOnly(noteBlock);
+
+if(concerns.length){
+found=true;
+concernOnly+=`${customer || "Unknown Customer"}:\n`;
+concerns.forEach(c=>concernOnly+=`• ${c}\n`);
+concernOnly+="\n";
+
+note+=`${customer || "Unknown Customer"}:\n`;
+concerns.forEach(c=>note+=`• ${c}\n`);
+note+="\n";
+}
+}
+
+if(!found){
+note+="No customer concerns were clearly detected under Customer Concern.";
+concernOnly+="No customer concerns were clearly detected under Customer Concern.";
+}
+
+document.getElementById("officeOutput").value=note.trim();
+document.getElementById("customerConcernOutput").value=concernOnly.trim();
+}
+
+function generateSupplyNote(){
+const checked=[...document.querySelectorAll('#supplies input[type="checkbox"]:checked')].map(x=>x.value);
+const extra=document.getElementById("extraSupplies").value.split("\n").map(x=>x.trim()).filter(Boolean);
+const items=[...checked,...extra];
+
+if(!items.length){
+document.getElementById("supplyOutput").value="Truck Needs / Supplies Low:\n\nNo supplies selected.";
+return;
+}
+
+document.getElementById("supplyOutput").value="Truck Needs / Supplies Low:\n\n"+items.map(i=>"• "+i).join("\n")+"\n\nPlease restock when available.";
 }
 
 function copyText(id){
-  navigator.clipboard.writeText(document.getElementById(id).textContent);
+const box=document.getElementById(id);
+if(!box.value.trim()){alert("Nothing to copy yet.");return;}
+navigator.clipboard.writeText(box.value).then(()=>alert("Copied.")).catch(()=>{
+box.select();document.execCommand("copy");alert("Copied.");
+});
 }
-
-function copyEverything(){
-  const note = document.getElementById("serviceNote").textContent;
-  const rationale = document.getElementById("rationaleNote").textContent;
-  navigator.clipboard.writeText(note + "\n\nPRODUCT RATIONALE\n" + rationale);
-}
-
-setupOptions();
-
-setupSearch("pestSearch", "pestSuggestions", pests, selectedPests, renderPestTags);
-setupSearch("materialSearch", "materialSuggestions", materials, selectedMaterials, renderMaterialTags);
-
-renderPestTags();
-renderMaterialTags();
-
 </script>
+
 </body>
 </html>
-  
