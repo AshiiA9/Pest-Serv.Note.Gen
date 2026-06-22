@@ -1,224 +1,819 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customer Text Generator</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pest Tech Notes Pro</title>
 
 <style>
+:root{
+  --pink:#df4fa3;
+  --blue:#4da3e8;
+  --dark:#202124;
+  --muted:#6f6f6f;
+  --bg:#f7f7f7;
+  --card:#ffffff;
+  --soft:#f4f2f3;
+  --border:#f4cce4;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#eef7ff;
-  color:#111827;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  padding-bottom:24px;
 }
+
+.app{
+  max-width:820px;
+  margin:0 auto;
+  padding:14px 10px;
+}
+
 .header{
-  background:linear-gradient(90deg,#0ea5e9,#ec4aa5);
-  color:white;
-  padding:24px 16px;
-  text-align:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:12px 0 16px;
 }
+
+.logo{
+  width:36px;
+  height:50px;
+  border:2px solid #111;
+  background:#d9f2ff;
+  border-radius:4px;
+}
+
 .header h1{
+  font-size:28px;
+  line-height:1;
   margin:0;
-  font-size:24px;
+  font-weight:800;
 }
-.header p{
-  margin:8px 0 0;
-}
-.wrap{
-  max-width:750px;
-  margin:auto;
-  padding:16px;
-}
+
 .card{
-  background:white;
+  background:var(--card);
   border-radius:18px;
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  padding:14px;
+  margin:0 0 12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
 }
-h2{
-  margin-top:0;
-  font-size:18px;
+
+.section-title{
+  color:var(--pink);
+  font-size:17px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  font-weight:800;
+  margin:0 0 10px;
 }
-.btn-grid{
+
+.section-title.blue{color:var(--blue)}
+
+select, textarea, input{
+  width:100%;
+  border:none;
+  outline:none;
+  background:var(--soft);
+  border-radius:16px;
+  padding:12px 14px;
+  font-size:17px;
+  color:#222;
+}
+
+textarea{
+  min-height:78px;
+  resize:vertical;
+}
+
+.grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
+  column-gap:12px;
+  row-gap:9px;
 }
-.btn-grid.three{
-  grid-template-columns:1fr;
-}
-button{
-  border:0;
-  border-radius:14px;
-  padding:14px;
+
+.option{
+  display:flex;
+  align-items:center;
+  gap:8px;
   font-size:16px;
-  font-weight:700;
-  background:#e0f2fe;
-  color:#075985;
+  cursor:pointer;
+  user-select:none;
+  min-height:32px;
 }
-button.selected{
-  background:linear-gradient(135deg,#0ea5e9,#ec4aa5);
+
+.circle{
+  width:21px;
+  height:21px;
+  border:2px solid var(--pink);
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   color:white;
-}
-.output{
-  background:#f9fafb;
-  border:1px solid #d1d5db;
-  border-radius:14px;
-  padding:14px;
-  min-height:140px;
-  font-size:17px;
-  line-height:1.5;
-  white-space:pre-wrap;
-}
-.copy{
-  width:100%;
-  margin-top:12px;
-  background:#111827;
-  color:white;
-}
-.clear{
-  width:100%;
-  margin-top:10px;
-  background:#f3f4f6;
-  color:#111827;
-}
-.small{
-  color:#6b7280;
   font-size:14px;
+  font-weight:900;
+  flex:0 0 auto;
 }
+
+.option.selected .circle{
+  background:var(--pink);
+}
+
+.option.selected .circle::after{
+  content:"✓";
+}
+
+.btn{
+  width:100%;
+  border:none;
+  border-radius:17px;
+  padding:16px 14px;
+  font-size:21px;
+  font-weight:800;
+  color:white;
+  background:var(--blue);
+  border:2px solid var(--pink);
+  box-shadow:0 4px 9px rgba(0,0,0,.1);
+  cursor:pointer;
+  margin:0 0 12px;
+}
+
+.btn.pink{
+  background:var(--pink);
+  border-color:var(--pink);
+  margin:12px 0 0;
+  font-size:17px;
+  padding:14px;
+}
+
+.result-card{
+  display:none;
+  background:#fff8fc;
+  border:2px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-top:14px;
+}
+
+.result-card h2{
+  color:var(--pink);
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  margin:0 0 12px;
+  font-size:18px;
+}
+
+.result-text{
+  white-space:pre-wrap;
+  font-size:17px;
+  line-height:1.42;
+}.material-wrap{
+  position:relative;
+}
+
+.search-box{
+  margin-bottom:8px;
+}
+
+.suggestions{
+  display:none;
+  max-height:180px;
+  overflow:auto;
+  background:white;
+  border:1px solid #e7e7e7;
+  border-radius:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  margin-top:6px;
+}
+
+.suggestion{
+  padding:10px 12px;
+  font-size:15px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.suggestion:last-child{
+  border-bottom:none;
+}
+
+.selected-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+
+.tag{
+  background:#faf6ff;
+  color:#7c2bd9;
+  border:1px solid #e4d2ff;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.tag span{
+  margin-left:6px;
+  color:#d62883;
+  cursor:pointer;
+}
+
+.small-note{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="app">
+
 <div class="header">
-  <h1>Customer Text Generator</h1>
-  <p>Shield Pest Appalachia</p>
+  <div class="logo"></div>
+  <h1>Pest Tech Notes Pro</h1>
 </div>
 
-<div class="wrap">
+<div class="card">
+  <h2 class="section-title">Customer Contact</h2>
+  <select id="contact">
+    <option>No Answer</option>
+    <option>Spoke with Customer</option>
+    <option>Texted Customer</option>
+    <option>Left Voicemail</option>
+    <option>Customer Not Home</option>
+  </select>
+</div>
 
-  <div class="card">
-    <h2>Greeting</h2>
-    <div class="btn-grid">
-      <button onclick="selectOption('greeting','morning',this)">Good Morning</button>
-      <button onclick="selectOption('greeting','afternoon',this)">Good Afternoon</button>
-    </div>
+<div class="card">
+  <h2 class="section-title">Service Type</h2>
+  <div class="grid" id="serviceType">
+    <div class="option" data-value="General Pest"><span class="circle"></span>General Pest</div>
+    <div class="option" data-value="Mosquito"><span class="circle"></span>Mosquito</div>
+    <div class="option" data-value="Carpenter Ant"><span class="circle"></span>Carpenter Ant</div>
+    <div class="option" data-value="Fire Ant"><span class="circle"></span>Fire Ant</div>
+    <div class="option" data-value="Rodent"><span class="circle"></span>Rodent</div>
+    <div class="option" data-value="Termite"><span class="circle"></span>Termite</div>
+    <div class="option" data-value="Exterior Only"><span class="circle"></span>Exterior Only</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="section-title blue">Target Pest(s)</h2>
+
+  <div class="material-wrap">
+
+    <input
+      id="pestSearch"
+      class="search-box"
+      placeholder="Search pests..."
+      autocomplete="off"
+    >
+
+    <div id="pestSuggestions" class="suggestions"></div>
+
+    <div id="selectedPests" class="selected-tags"></div>
+
   </div>
 
-  <div class="card">
-    <h2>Status</h2>
-    <div class="btn-grid three">
-      <button onclick="selectOption('status','behind',this)">Running Behind</button>
-      <button onclick="selectOption('status','ahead',this)">Running Ahead</button>
-      <button onclick="selectOption('status','ontime',this)">On Time</button>
-    </div>
+  <div class="small-note">
+    Select all observed pests. Multiple selections allowed.
   </div>
 
-  <div class="card">
-    <h2>ETA</h2>
-    <div class="btn-grid">
-      <button onclick="selectOption('eta','15 minutes',this)">15 Minutes Away</button>
-      <button onclick="selectOption('eta','30 minutes',this)">30 Minutes Away</button>
-      <button onclick="selectOption('eta','45 minutes',this)">45 Minutes Away</button>
-      <button onclick="selectOption('eta','1 hour',this)">1 Hour Away</button>
-    </div>
+</div>
+
+<div class="card">
+  <h2 class="section-title blue">Severity</h2>
+
+  <div class="grid" id="severity">
+    <div class="option" data-value="Low"><span class="circle"></span>Low</div>
+    <div class="option" data-value="Moderate"><span class="circle"></span>Moderate</div>
+    <div class="option" data-value="Heavy"><span class="circle"></span>Heavy</div>
+  </div>
+</div><div class="card">
+  <h2 class="section-title blue">Interior Areas Treated</h2>
+
+  <div class="grid" id="interiorAreas">
+    <div class="option" data-value="Kitchen"><span class="circle"></span>Kitchen</div>
+    <div class="option" data-value="Bathroom"><span class="circle"></span>Bathroom</div>
+    <div class="option" data-value="Bedroom"><span class="circle"></span>Bedroom</div>
+    <div class="option" data-value="Garage"><span class="circle"></span>Garage</div>
+    <div class="option" data-value="Basement"><span class="circle"></span>Basement</div>
+    <div class="option" data-value="Laundry Room"><span class="circle"></span>Laundry Room</div>
+    <div class="option" data-value="Attic"><span class="circle"></span>Attic</div>
+    <div class="option" data-value="Entry Points"><span class="circle"></span>Entry Points</div>
+    <div class="option" data-value="Cracks & Crevices"><span class="circle"></span>Cracks & Crevices</div>
+    <div class="option" data-value="Utility Penetrations"><span class="circle"></span>Utility Penetrations</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="section-title blue">Exterior Areas Treated</h2>
+
+  <div class="grid" id="exteriorAreas">
+    <div class="option" data-value="Foundation"><span class="circle"></span>Foundation</div>
+    <div class="option" data-value="Entry Points"><span class="circle"></span>Entry Points</div>
+    <div class="option" data-value="Eaves"><span class="circle"></span>Eaves</div>
+    <div class="option" data-value="Perimeter"><span class="circle"></span>Perimeter</div>
+    <div class="option" data-value="Mulch Beds"><span class="circle"></span>Mulch Beds</div>
+    <div class="option" data-value="Landscaping"><span class="circle"></span>Landscaping</div>
+    <div class="option" data-value="Deck"><span class="circle"></span>Deck</div>
+    <div class="option" data-value="Patio"><span class="circle"></span>Patio</div>
+    <div class="option" data-value="Fence Line"><span class="circle"></span>Fence Line</div>
+    <div class="option" data-value="Yard Perimeter"><span class="circle"></span>Yard Perimeter</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="section-title">Activity Found</h2>
+
+  <div class="grid" id="activityFound">
+    <div class="option" data-value="None"><span class="circle"></span>None</div>
+    <div class="option" data-value="General Pest Activity"><span class="circle"></span>General Pest Activity</div>
+    <div class="option" data-value="Ant Activity"><span class="circle"></span>Ant Activity</div>
+    <div class="option" data-value="Spider Activity"><span class="circle"></span>Spider Activity</div>
+    <div class="option" data-value="Roach Activity"><span class="circle"></span>Roach Activity</div>
+    <div class="option" data-value="Wasp Activity"><span class="circle"></span>Wasp Activity</div>
+    <div class="option" data-value="Rodent Activity"><span class="circle"></span>Rodent Activity</div>
+    <div class="option" data-value="Webbing Present"><span class="circle"></span>Webbing Present</div>
+    <div class="option" data-value="Mud Tubes"><span class="circle"></span>Mud Tubes</div>
+    <div class="option" data-value="Moisture Conditions"><span class="circle"></span>Moisture Conditions</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="section-title blue">Customer Concern / Details</h2>
+
+  <textarea
+    id="concern"
+    placeholder="Customer concerns, observations, recommendations, follow-up notes..."
+  ></textarea>
+</div>
+
+<div class="card">
+  <h2 class="section-title blue">Materials Used</h2>
+
+  <div class="material-wrap">
+
+    <input
+      id="materialSearch"
+      class="search-box"
+      placeholder="Search materials..."
+      autocomplete="off"
+    >
+
+    <div id="materialSuggestions" class="suggestions"></div>
+
+    <div id="selectedMaterials" class="selected-tags"></div>
+
   </div>
 
-  <div class="card">
-    <h2>Generated Text</h2>
-    <div id="output" class="output">
-      Select a greeting, status, and ETA to generate the text.
-    </div>
-    <button class="copy" onclick="copyText()">Copy Text</button>
-    <button class="clear" onclick="clearSelections()">Clear</button>
-    <p class="small" id="copied"></p>
+  <div class="small-note">
+    Select all materials used during service.
   </div>
+</div>
 
+<button class="btn" onclick="generateNote()">
+  Generate Service Note
+</button>
+
+<div class="result-card" id="noteCard">
+  <h2>Service Note</h2>
+  <div id="serviceNote" class="result-text"></div>
+
+  <button class="btn pink" onclick="copyText('serviceNote')">
+    Copy Service Note
+  </button>
+</div>
+
+<div class="result-card" id="rationaleCard">
+  <h2>Product Rationale</h2>
+  <div id="rationaleNote" class="result-text"></div>
+
+  <button class="btn pink" onclick="copyText('rationaleNote')">
+    Copy Product Rationale
+  </button>
+
+  <button class="btn pink" onclick="copyEverything()">
+    Copy Everything
+  </button>
 </div>
 
 <script>
-let selections = {
-  greeting: "",
-  status: "",
-  eta: ""
-};
 
-function selectOption(type, value, btn){
-  selections[type] = value;
+const pests = [
 
-  const card = btn.closest(".card");
-  card.querySelectorAll("button").forEach(button => {
-    button.classList.remove("selected");
+  // Ants
+  "Carpenter Ant",
+  "Odorous House Ant",
+  "Pavement Ant",
+  "Fire Ant",
+
+  // Roaches
+  "German Cockroach",
+  "American Cockroach",
+  "Oriental Cockroach",
+  "Brown-Banded Cockroach",
+
+  // Spiders
+  "Wolf Spider",
+  "House Spider",
+  "Cellar Spider",
+  "Brown Recluse",
+  "Black Widow",
+
+  // Stinging
+  "Paper Wasp",
+  "Yellowjacket",
+  "Bald-Faced Hornet",
+  "Mud Dauber",
+  "Carpenter Bee",
+  "Ground Nesting Bee",
+
+  // Occasional Invaders
+  "Stink Bug",
+  "Asian Lady Beetle",
+  "Boxelder Bug",
+  "Earwig",
+  "Millipede",
+  "Centipede",
+  "Clover Mite",
+
+  // Rodents
+  "House Mouse",
+  "Norway Rat",
+  "Roof Rat",
+
+  // Termites
+  "Subterranean Termite",
+  "Powderpost Beetle",
+
+  // Flying
+  "Mosquito",
+  "House Fly",
+  "Drain Fly",
+  "Cluster Fly"
+
+];
+
+const selectedPests = new Set();const materials = [
+  "565 Aerosol 2.5%",
+  "Advance Disk bait .011%",
+  "Alpine Fly Spray Dinotefuran 1.0%",
+  "Alpine Dust .05%",
+  "Alpine WSG .1%",
+  "Alpine WSG .2%",
+  "Alpine WSG .3%",
+  "Bifen I/T",
+  "Bifen XTS",
+  "Biffen",
+  "Bora-Care",
+  "CB-80",
+  "Contrac Blox - Rodent Bait .005%",
+  "Cross Check Insecticide",
+  "Crosscheck Plus Multi insecticide",
+  "Crossfire Bedbug Concentrate",
+  "Cy-Kick Aerosol .1%",
+  "Cyper TC .25%",
+  "Cyzmic CS .06%",
+  "Delta Dust .05%",
+  "Essentria G Bait 3.5%",
+  "Essentria IC3",
+  "ExciteR 89459-41 .5%",
+  "Final Bait Block .005%",
+  "Gentrol EC3 89459-119 .015%",
+  "Gentrol IGR",
+  "In2Mix",
+  "InTice Ant Bait 3%",
+  "Maxforce Complete 1.%",
+  "Maxforce Complete Granules 1.0%",
+  "Maxforce Gel .05%",
+  "Mold Armor 4091-23",
+  "Niban",
+  "Orthen Crystals 1.%",
+  "Premise Foam .05%",
+  "Pro Control Pop Top aero 3.3%",
+  "Ridesco WG .15%",
+  "Suspend SC .03%",
+  "Talstar .02%",
+  "Taurus SC .03",
+  "Tengard SFR .05%",
+  "Termidor HE .06%",
+  "Termidor SC .06%",
+  "Terro PCO 5.4%",
+  "Trelona Compressed Termite Bait (Novaluron: 0.5%)",
+  "Tri Die Dust",
+  "Wasp Freeze",
+  "Wasp Freeze Aerosol .25%"
+];
+
+const selectedMaterials = new Set();
+
+function setupOptions(){
+  document.querySelectorAll(".option").forEach(option=>{
+    option.addEventListener("click",()=>{
+      const parent = option.parentElement.id;
+
+      if(parent === "severity"){
+        document.querySelectorAll("#severity .option").forEach(o=>o.classList.remove("selected"));
+      }
+
+      option.classList.toggle("selected");
+    });
+  });
+}
+
+function getSelected(id){
+  return Array.from(document.querySelectorAll(`#${id} .option.selected`))
+    .map(el=>el.dataset.value);
+}
+
+function listText(arr){
+  return arr.length ? arr.join(", ") : "None";
+}
+
+function fuzzyMatch(search, item){
+  const s = search.toLowerCase().trim();
+  const i = item.toLowerCase();
+
+  if(!s) return false;
+  if(i.includes(s)) return true;
+
+  const words = s.split(/\s+/);
+
+  return words.every(word=>{
+    if(i.includes(word)) return true;
+    if(word.length < 3) return false;
+
+    let matches = 0;
+    for(let char of word){
+      if(i.includes(char)) matches++;
+    }
+
+    return matches / word.length >= 0.75;
+  });
+}
+
+function setupSearch(inputId, suggestionId, sourceList, selectedSet, renderFn){
+  const input = document.getElementById(inputId);
+  const suggestions = document.getElementById(suggestionId);
+
+  input.addEventListener("input",()=>{
+    const search = input.value;
+    suggestions.innerHTML = "";
+
+    if(!search.trim()){
+      suggestions.style.display = "none";
+      return;
+    }
+
+    const matches = sourceList
+      .filter(item=>fuzzyMatch(search,item))
+      .slice(0,10);
+
+    if(!matches.length){
+      suggestions.style.display = "none";
+      return;
+    }
+
+    matches.forEach(item=>{
+      const div = document.createElement("div");
+      div.className = "suggestion";
+      div.textContent = selectedSet.has(item) ? `✓ ${item}` : item;
+      div.onclick = ()=>{
+        selectedSet.add(item);
+        input.value = "";
+        suggestions.style.display = "none";
+        renderFn();
+      };
+      suggestions.appendChild(div);
+    });
+
+    suggestions.style.display = "block";
+  });
+}
+
+function renderTags(containerId, selectedSet){
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  Array.from(selectedSet).forEach(item=>{
+    const tag = document.createElement("div");
+    tag.className = "tag";
+    tag.innerHTML = `${item}<span>×</span>`;
+    tag.onclick = ()=>{
+      selectedSet.delete(item);
+      renderTags(containerId, selectedSet);
+    };
+    container.appendChild(tag);
+  });
+}
+
+function renderPestTags(){
+  renderTags("selectedPests", selectedPests);
+}
+
+function renderMaterialTags(){
+  renderTags("selectedMaterials", selectedMaterials);
+}
+
+document.addEventListener("click", e=>{
+  if(!e.target.closest(".material-wrap")){
+    document.querySelectorAll(".suggestions").forEach(s=>s.style.display="none");
+  }
+});function generateNote(){
+  const contact = document.getElementById("contact").value;
+  const service = getSelected("serviceType");
+  const severity = getSelected("severity");
+  const interior = getSelected("interiorAreas");
+  const exterior = getSelected("exteriorAreas");
+  const activity = getSelected("activityFound");
+  const concern = document.getElementById("concern").value.trim();
+
+  const pestsUsed = Array.from(selectedPests);
+  const materialsUsed = Array.from(selectedMaterials);
+
+  const serviceText = service.length ? service.join(", ") : "General Pest";
+  const severityText = severity.length ? severity[0] : "Not specified";
+
+  let note =
+`-Knocked: ${contact}
+
+-Notes:
+Service type: ${serviceText}. Target pest(s): ${listText(pestsUsed)}. Severity: ${severityText}. Interior treatment performed at: ${listText(interior)}. Exterior treatment performed at: ${listText(exterior)}. Activity found: ${listText(activity)}. Materials applied are documented in the Materials section. Service completed and customer advised to allow treated areas to dry before re-entry if applicable.`;
+
+  if(concern){
+    note += `
+
+-Customer Concern:
+${concern}`;
+  }
+
+  document.getElementById("serviceNote").textContent = note;
+  document.getElementById("noteCard").style.display = "block";
+
+  document.getElementById("rationaleNote").textContent =
+    buildRationale(pestsUsed, materialsUsed, severityText, interior, exterior, activity);
+
+  document.getElementById("rationaleCard").style.display = "block";
+  document.getElementById("noteCard").scrollIntoView({behavior:"smooth"});
+}
+
+function buildRationale(pestsUsed, materialsUsed, severity, interior, exterior, activity){
+  if(!pestsUsed.length && !materialsUsed.length){
+    return "Select at least one target pest and one material to generate a product rationale.";
+  }
+
+  if(!materialsUsed.length){
+    return "No materials were selected. Select the products used to generate a professional product rationale.";
+  }
+
+  if(!pestsUsed.length){
+    return materialsUsed.map(material=>{
+      return `${material}
+${getMaterialRationale(material, "general pest activity", severity, interior, exterior)}`;
+    }).join("\n\n");
+  }
+
+  let output = `Target pest(s): ${pestsUsed.join(", ")}
+Severity: ${severity}
+
+`;
+
+  materialsUsed.forEach(material=>{
+    output += `${material}
+`;
+
+    pestsUsed.forEach(pest=>{
+      output += `- ${pest}: ${getMaterialRationale(material, pest, severity, interior, exterior)}
+`;
+    });
+
+    output += "\n";
   });
 
-  btn.classList.add("selected");
-  generateText();
+  return output.trim();
 }
 
-function generateText(){
-  const output = document.getElementById("output");
-  const copied = document.getElementById("copied");
-  copied.textContent = "";
+function getMaterialRationale(material, pest, severity, interior, exterior){
+  const m = material.toLowerCase();
+  const p = pest.toLowerCase();
 
-  if(!selections.greeting || !selections.status || !selections.eta){
-    output.textContent = "Select a greeting, status, and ETA to generate the text.";
-    return;
+  const areaText = [...interior, ...exterior].length
+    ? [...interior, ...exterior].join(", ")
+    : "documented treatment areas";
+
+  if(m.includes("alpine wsg")){
+    if(p.includes("ant")){
+      return `Alpine WSG was selected because dinotefuran is a non-repellent active ingredient. For ant activity, this allows foraging ants to move through treated areas without immediate avoidance, improving exposure along trails, entry points, and harborage areas. This supports better colony-level control when applied according to label directions.`;
+    }
+    if(p.includes("roach") || p.includes("cockroach")){
+      return `Alpine WSG was selected because non-repellent chemistry is useful where cockroaches travel through cracks, crevices, and harborage areas. It helps provide residual control without relying only on visible contact.`;
+    }
+    return `Alpine WSG was selected as a non-repellent residual treatment for listed pests in ${areaText}. It is a good choice when pests are using cracks, entry points, and hidden travel routes.`;
   }
 
-  const greet = selections.greeting === "morning" ? "Good morning" : "Good afternoon";
-  const etaText = `I am approximately ${selections.eta} away`;
-
-  let text = "";
-
-  if(selections.status === "behind"){
-    text = `${greet}, this is Ashton from Shield Pest Appalachia. I wanted to let you know that I am running a little behind schedule today, but I am on the way. ${etaText} and will see you soon. I apologize for any inconvenience and appreciate your understanding. Thank you.`;
+  if(m.includes("taurus") || m.includes("termidor")){
+    if(p.includes("termite")){
+      return `This product was selected because fipronil is a non-repellent active ingredient used in termite management. Non-repellent treatments are useful because termites do not readily detect treated areas, allowing contact and transfer through normal movement when applied according to label directions.`;
+    }
+    if(p.includes("ant")){
+      return `This product was selected because fipronil is a non-repellent active ingredient. For ant activity, non-repellent treatments help avoid scattering the colony and support transfer among foraging ants and nestmates.`;
+    }
+    return `This product was selected because fipronil provides non-repellent residual control for labeled pests when applied to appropriate exterior or structural treatment areas.`;
   }
 
-  if(selections.status === "ahead"){
-    text = `${greet}, this is Ashton from Shield Pest Appalachia. I am running ahead of schedule and am on the way. ${etaText} and should arrive a little earlier than expected. See you soon, and thank you.`;
+  if(m.includes("crosscheck") || m.includes("bifen") || m.includes("talstar")){
+    if(p.includes("spider")){
+      return `Selected as a residual perimeter treatment to reduce spider pressure around the structure. Treating eaves, entry points, foundation areas, and web-prone locations helps reduce insect prey and spider activity.`;
+    }
+    if(p.includes("wasp") || p.includes("hornet") || p.includes("yellowjacket")){
+      return `Selected for exterior residual control in areas where stinging insects may land, rest, or enter. This supports control around eaves, entry points, and exterior harborage areas.`;
+    }
+    return `Selected as a residual pyrethroid treatment for exterior foundation, perimeter, entry point, and harborage areas. This helps reduce pest pressure around the structure and limit future entry.`;
   }
 
-  if(selections.status === "ontime"){
-    text = `${greet}, this is Ashton from Shield Pest Appalachia. I am on schedule and on the way to your service appointment. ${etaText} and look forward to seeing you soon. Thank you.`;
+  if(m.includes("gentrol")){
+    if(p.includes("roach") || p.includes("cockroach")){
+      return `Gentrol was selected as an insect growth regulator to help disrupt cockroach development. This helps reduce future populations by preventing immature insects from developing normally and reproducing.`;
+    }
+    return `Gentrol was selected as an insect growth regulator to help reduce future pest pressure by interrupting normal insect development.`;
   }
 
-  output.textContent = text;
+  if(m.includes("niban") || m.includes("intice") || m.includes("advance") || m.includes("maxforce complete")){
+    if(p.includes("ant")){
+      return `Selected as a bait treatment for foraging ants. Bait is useful because ants collect the material and share it with nestmates, supporting control beyond only the visible ants.`;
+    }
+    if(p.includes("roach") || p.includes("cockroach")){
+      return `Selected as a bait treatment for cockroach activity. Baits place control directly in feeding and harborage areas while limiting broad surface application.`;
+    }
+    return `Selected as a bait treatment for foraging pests in documented activity areas.`;
+  }
+
+  if(m.includes("maxforce gel")){
+    return `Selected as a targeted gel bait for cracks, crevices, and active foraging areas. Gel bait is useful where pests are feeding or traveling and allows precise placement.`;
+  }
+
+  if(m.includes("crossfire")){
+    return `Selected for bed bug treatment because it is designed for direct and residual control of bed bugs on labeled areas such as cracks, crevices, seams, tufts, bed frames, and harborage points.`;
+  }
+
+  if(m.includes("wasp freeze")){
+    return `Selected for wasp or stinging insect activity because it provides fast knockdown and helps address active nests or pressure around eaves, entry points, and exterior areas.`;
+  }
+
+  if(m.includes("contrac") || m.includes("final bait")){
+    return `Selected as a rodent bait for rodent activity or monitoring. Rodent bait should be secured in bait stations and used according to label directions to help reduce rodent pressure around the property.`;
+  }
+
+  if(m.includes("trelona")){
+    return `Selected as a termite bait because novaluron interferes with termite development and colony growth. This is appropriate for termite bait station programs when serviced according to label and company procedure.`;
+  }
+
+  if(m.includes("in2mix")){
+    return `Selected for mosquito service because it is designed for use in mosquito station programs and helps reduce mosquito breeding pressure around the property.`;
+  }
+
+  if(m.includes("delta dust") || m.includes("tri die") || m.includes("alpine dust")){
+    return `Selected for cracks, crevices, wall voids, and protected harborage areas where pests may hide or travel. Dust applications are useful in dry, hard-to-reach spaces.`;
+  }
+
+  if(m.includes("bora-care")){
+    return `Selected for wood-destroying insect or wood-protection situations because borate treatments are designed to protect wood from listed pests when applied according to label directions.`;
+  }
+
+  return `Selected because it was appropriate for the documented pest activity, severity level, and treatment areas. Product was applied according to label directions and company procedures to help reduce current pest pressure and prevent future activity.`;
 }
 
-function copyText(){
-  const text = document.getElementById("output").textContent;
-  const copied = document.getElementById("copied");
-
-  if(text.includes("Select a greeting")){
-    copied.textContent = "Generate a text first.";
-    return;
-  }
-
-  navigator.clipboard.writeText(text).then(() => {
-    copied.textContent = "Copied!";
-  }).catch(() => {
-    copied.textContent = "Copy failed. Tap and hold the text to copy manually.";
-  });
+function copyText(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent);
 }
 
-function clearSelections(){
-  selections = {
-    greeting: "",
-    status: "",
-    eta: ""
-  };
-
-  document.querySelectorAll("button").forEach(button => {
-    button.classList.remove("selected");
-  });
-
-  document.getElementById("output").textContent = "Select a greeting, status, and ETA to generate the text.";
-  document.getElementById("copied").textContent = "";
+function copyEverything(){
+  const note = document.getElementById("serviceNote").textContent;
+  const rationale = document.getElementById("rationaleNote").textContent;
+  navigator.clipboard.writeText(note + "\n\nPRODUCT RATIONALE\n" + rationale);
 }
+
+setupOptions();
+
+setupSearch("pestSearch", "pestSuggestions", pests, selectedPests, renderPestTags);
+setupSearch("materialSearch", "materialSuggestions", materials, selectedMaterials, renderMaterialTags);
+
+renderPestTags();
+renderMaterialTags();
+
 </script>
-
 </body>
 </html>
