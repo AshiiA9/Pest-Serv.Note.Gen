@@ -334,8 +334,188 @@ textarea{
     <div class="option" data-value="Yard Perimeter"><span class="circle"></span>Yard Perimeter</div>
   </div>
 </div>
+<div <div class="card">
+  <h2 class="section-title">Activity Found</h2>
+
+  <div class="grid" id="activityFound">
+    <div class="option" data-value="None"><span class="circle"></span>None</div>
+    <div class="option" data-value="General Pest Activity"><span class="circle"></span>General Pest Activity</div>
+    <div class="option" data-value="Ant Activity"><span class="circle"></span>Ant Activity</div>
+    <div class="option" data-value="Spider Activity"><span class="circle"></span>Spider Activity</div>
+    <div class="option" data-value="Roach Activity"><span class="circle"></span>Roach Activity</div>
+    <div class="option" data-value="Wasp Activity"><span class="circle"></span>Wasp Activity</div>
+    <div class="option" data-value="Mud Dauber Activity"><span class="circle"></span>Mud Dauber Activity</div>
+    <div class="option" data-value="Rodent Activity"><span class="circle"></span>Rodent Activity</div>
+    <div class="option" data-value="Webbing Present"><span class="circle"></span>Webbing Present</div>
+    <div class="option" data-value="Mud Tubes"><span class="circle"></span>Mud Tubes</div>
+    <div class="option" data-value="Moisture Conditions"><span class="circle"></span>Moisture Conditions</div>
+  </div>
+</div>
 
 <div class="card">
+  <h2 class="section-title blue">Customer Concern / Details</h2>
+
+  <textarea
+    id="concern"
+    placeholder="Customer concerns, observations, recommendations, follow-up notes..."
+  ></textarea>
+</div>
+
+<div class="card">
+  <h2 class="section-title blue">Materials Used</h2>
+
+  <div class="material-wrap">
+    <input
+      id="materialSearch"
+      class="search-box"
+      placeholder="Search materials..."
+      autocomplete="off"
+    >
+
+    <div id="materialSuggestions" class="suggestions"></div>
+    <div id="selectedMaterials" class="selected-tags"></div>
+  </div>
+
+  <div class="small-note">
+    Select all materials used during service.
+  </div>
+</div>
+
+<button class="btn" onclick="generateNote()">
+  Generate Service Note
+</button>
+
+<div class="result-card" id="noteCard">
+  <h2>Service Note</h2>
+  <div id="serviceNote" class="result-text"></div>
+
+  <button class="btn pink" onclick="copyText('serviceNote')">
+    Copy Service Note
+  </button>
+</div>
+
+<div class="result-card" id="rationaleCard">
+  <h2>Product Rationale</h2>
+  <div id="rationaleNote" class="result-text"></div>
+
+  <button class="btn pink" onclick="copyText('rationaleNote')">
+    Copy Product Rationale
+  </button>
+
+  <button class="btn pink" onclick="copyEverything()">
+    Copy Everything
+  </button>
+</div>
+
+<script>
+const pests = [
+  // Ants
+  "Carpenter Ant",
+  "Odorous House Ant",
+  "Pavement Ant",
+  "Fire Ant",
+
+  // Roaches
+  "German Cockroach",
+  "American Cockroach",
+  "Oriental Cockroach",
+  "Brown-Banded Cockroach",
+
+  // Spiders
+  "Wolf Spider",
+  "House Spider",
+  "Cellar Spider",
+  "Brown Recluse",
+  "Black Widow",
+
+  // Stinging / Flying
+  "Paper Wasp",
+  "Yellowjacket",
+  "Bald-Faced Hornet",
+  "Mud Dauber",
+  "Carpenter Bee",
+  "Ground Nesting Bee",
+
+  // Occasional Invaders
+  "Stink Bug",
+  "Asian Lady Beetle",
+  "Boxelder Bug",
+  "Earwig",
+  "Millipede",
+  "Centipede",
+  "Clover Mite",
+  "Springtail",
+
+  // Rodents
+  "House Mouse",
+  "Norway Rat",
+  "Roof Rat",
+
+  // Termites / Wood Destroying
+  "Subterranean Termite",
+  "Powderpost Beetle",
+
+  // Flying
+  "Mosquito",
+  "House Fly",
+  "Drain Fly",
+  "Cluster Fly"
+];
+
+const selectedPests = new Set();
+
+const materials = [
+  "565 Aerosol 2.5%",
+  "Advance Disk bait .011%",
+  "Alpine Fly Spray Dinotefuran 1.0%",
+  "Alpine Dust .05%",
+  "Alpine WSG .1%",
+  "Alpine WSG .2%",
+  "Alpine WSG .3%",
+  "Bifen I/T",
+  "Bifen XTS",
+  "Biffen",
+  "Bora-Care",
+  "CB-80",
+  "Contrac Blox - Rodent Bait .005%",
+  "Cross Check Insecticide",
+  "Crosscheck Plus Multi insecticide",
+  "Crossfire Bedbug Concentrate",
+  "Cy-Kick Aerosol .1%",
+  "Cyper TC .25%",
+  "Cyzmic CS .06%",
+  "Delta Dust .05%",
+  "Essentria G Bait 3.5%",
+  "Essentria IC3",
+  "ExciteR 89459-41 .5%",
+  "Final Bait Block .005%",
+  "Gentrol EC3 89459-119 .015%",
+  "Gentrol IGR",
+  "In2Mix",
+  "InTice Ant Bait 3%",
+  "Maxforce Complete 1.%",
+  "Maxforce Complete Granules 1.0%",
+  "Maxforce Gel .05%",
+  "Mold Armor 4091-23",
+  "Niban Granules 5% Orthoboric Acid",
+  "Orthen Crystals 1.%",
+  "Premise Foam .05%",
+  "Pro Control Pop Top aero 3.3%",
+  "Ridesco WG .15%",
+  "Suspend SC .03%",
+  "Talstar .02%",
+  "Taurus SC .03",
+  "Tengard SFR .05%",
+  "Termidor HE .06%",
+  "Termidor SC .06%",
+  "Terro PCO 5.4%",
+  "Trelona Compressed Termite Bait (Novaluron: 0.5%)",
+  "Tri Die Dust",
+  "Wasp Freeze",
+  "Wasp Freeze Aerosol .25%"
+];
+
+const selectedMaterials = new Set();class="card">
   <h2 class="section-title">Activity Found</h2>
 
   <div class="grid" id="activityFound">
@@ -669,7 +849,226 @@ ${concern}`;
   document.getElementById("rationaleCard").style.display = "block";
   document.getElementById("noteCard").scrollIntoView({behavior:"smooth"});
 }
+  function buildRationale(pestsUsed, materialsUsed, severity, interior, exterior, activity){
+  if(!pestsUsed.length && !materialsUsed.length){
+    return "Select at least one target pest and one material to generate a product rationale.";
+  }
 
+  if(!materialsUsed.length){
+    return "No materials were selected. Select the products used to generate a professional product rationale.";
+  }
+
+  const activityText = activity.length ? activity.join(", ") : "General pest activity";
+  const areaText = [...interior, ...exterior].length ? [...interior, ...exterior].join(", ") : "documented treatment areas";
+
+  if(!pestsUsed.length){
+    return materialsUsed.map(material=>{
+      return `${material}
+
+${getMaterialRationale(material, "general pest activity", severity, interior, exterior, activity)}`;
+    }).join("\n\n");
+  }
+
+  let output = `Target pest(s): ${pestsUsed.join(", ")}
+
+Severity: ${severity}
+
+Activity found: ${activityText}
+
+Treatment area focus: ${areaText}
+
+`;
+
+  materialsUsed.forEach(material=>{
+    output += `${material}
+
+`;
+
+    pestsUsed.forEach(pest=>{
+      output += `- ${pest}: ${getMaterialRationale(material, pest, severity, interior, exterior, activity)}
+
+`;
+    });
+
+    output += "\n";
+  });
+
+  return output.trim();
+}
+
+function getMaterialRationale(material, pest, severity, interior, exterior, activity){
+  const m = material.toLowerCase();
+  const p = pest.toLowerCase();
+  const a = activity.map(x=>x.toLowerCase()).join(" ");
+
+  const areaText = [...interior, ...exterior].length
+    ? [...interior, ...exterior].join(", ")
+    : "documented treatment areas";
+
+  const antActive = p.includes("ant") || a.includes("ant activity");
+  const roachActive = p.includes("roach") || p.includes("cockroach") || a.includes("roach activity");
+  const spiderActive = p.includes("spider") || p.includes("recluse") || p.includes("widow") || a.includes("spider activity") || a.includes("webbing");
+  const waspActive = p.includes("wasp") || p.includes("yellowjacket") || p.includes("hornet") || a.includes("wasp activity");
+  const mudDauberActive = p.includes("mud dauber") || a.includes("mud dauber");
+  const rodentActive = p.includes("mouse") || p.includes("rat") || a.includes("rodent activity");
+  const termiteActive = p.includes("termite") || a.includes("mud tubes");
+  const mosquitoActive = p.includes("mosquito");
+  const occasionalInvader = p.includes("stink bug") || p.includes("boxelder") || p.includes("millipede") || p.includes("centipede") || p.includes("earwig") || p.includes("springtail") || p.includes("clover mite") || p.includes("lady beetle");
+
+  if(m.includes("alpine wsg")){
+    if(antActive){
+      return `Active ant activity was documented. Alpine WSG was selected because it provides a non-repellent residual treatment that is useful along ant trails, entry points, cracks, crevices, and other travel routes. Because ants are less likely to detect and avoid a non-repellent application, foraging ants can continue moving through treated areas, improving exposure beyond only the visible ants. Treatment was focused on ${areaText} based on the observed severity and activity.`;
+    }
+
+    if(roachActive){
+      return `Roach activity was documented. Alpine WSG was selected because a non-repellent residual is useful in cracks, crevices, utility penetrations, and harborage zones where cockroaches travel and hide. This helps target hidden movement areas instead of relying only on direct visible contact. It is a strong choice when paired with sanitation, exclusion, bait placement, and follow-up monitoring.`;
+    }
+
+    if(spiderActive){
+      return `Spider activity or webbing was documented. Alpine WSG was selected as a residual treatment for areas where spiders travel, rest, or intercept insect prey. The treatment was focused around ${areaText}, especially web-prone areas, entry points, and cracks or crevices that can support spider activity.`;
+    }
+
+    return `Alpine WSG was selected as a non-repellent residual treatment for the documented pest activity. It is appropriate where pests are using hidden travel routes, entry points, cracks, crevices, and harborage areas around ${areaText}.`;
+  }
+
+  if(m.includes("taurus") || m.includes("termidor")){
+    if(termiteActive){
+      return `Termite activity or termite-conducive evidence was documented. This product was selected because fipronil is a non-repellent active ingredient used in termite management. Non-repellent applications are useful because termites do not readily detect the treated zone, allowing exposure through normal movement and transfer when applied according to label directions.`;
+    }
+
+    if(antActive){
+      return `Ant activity was documented. This product was selected because fipronil is a non-repellent active ingredient that can help avoid scattering ants and can support transfer among foraging ants and nestmates. It is especially useful around exterior entry points, foundation areas, trails, and structural edges when applied according to label directions.`;
+    }
+
+    return `This product was selected because fipronil provides non-repellent residual control for labeled pests. It was appropriate for the documented activity around ${areaText} where pests may contact treated exterior or structural areas.`;
+  }
+
+  if(m.includes("crosscheck") || m.includes("bifen") || m.includes("talstar") || m.includes("suspend") || m.includes("cyzmic") || m.includes("tengard")){
+    if(spiderActive){
+      return `Spider activity or webbing was documented. This product was selected as a residual perimeter and harborage treatment to reduce spider pressure around the structure. Treating eaves, foundation areas, entry points, corners, and web-prone locations helps reduce spider movement and also helps reduce the insect prey that attracts spiders.`;
+    }
+
+    if(waspActive){
+      return `Wasp or stinging insect activity was documented. This product was selected for exterior residual control in areas where wasps may land, rest, or attempt to enter. Treatment around eaves, entry points, soffits, and exterior harborage areas helps reduce future activity when no active nest requiring direct knockdown is present.`;
+    }
+
+    if(mudDauberActive){
+      return `Mud Dauber activity was documented. This product was selected to help reduce future nesting pressure around eaves, corners, porches, siding gaps, and other protected exterior areas. Mud Dauber nests should also be physically removed when inactive or safe to remove, and exclusion or sealing of openings can help reduce repeat activity.`;
+    }
+
+    if(occasionalInvader){
+      return `Occasional invader activity was documented. This product was selected as a residual exterior perimeter treatment to help reduce pests entering from mulch beds, landscaping, foundation edges, patios, doors, windows, and other entry points. Treatment was focused on ${areaText} to reduce current pressure and help limit future entry.`;
+    }
+
+    if(antActive){
+      return `Ant activity was documented. This product was selected as a residual perimeter treatment to reduce ant pressure around exterior trails, foundation edges, entry points, and harborage areas. It is best used where label directions allow and where it will not interfere with bait placements.`;
+    }
+
+    return `Selected as a residual pyrethroid treatment for exterior foundation, perimeter, entry point, and harborage areas. This helps reduce pest pressure around ${areaText} and helps limit future entry.`;
+  }
+
+  if(m.includes("gentrol")){
+    if(roachActive){
+      return `Roach activity was documented. Gentrol was selected as an insect growth regulator to help interrupt cockroach development. This supports longer-term control by preventing immature roaches from developing normally and helps reduce future reproduction when used with residual treatments, baiting, sanitation, and monitoring.`;
+    }
+
+    return `Gentrol was selected as an insect growth regulator to help reduce future pest pressure by interrupting normal insect development. It is most useful as part of a larger program rather than as a stand-alone knockdown product.`;
+  }
+
+  if(m.includes("niban")){
+    if(antActive){
+      return `Ant activity was documented. Niban Granules were selected as a 5% orthoboric acid bait for foraging ants where label directions allow. Baiting is useful because ants collect bait and can carry it back toward nesting or harborage areas, helping control more than only the visible ants. Placement should focus near active trails, exterior entry points, and conducive areas while avoiding contamination from repellent sprays.`;
+    }
+
+    if(roachActive){
+      return `Roach activity was documented. Niban Granules were selected as a 5% orthoboric acid bait option for cockroach activity in labeled areas such as cracks, crevices, voids, under appliances, or exterior/perimeter harborage zones. Bait placement helps target pests where they feed and travel while limiting unnecessary broad treatment.`;
+    }
+
+    if(p.includes("cricket") || p.includes("earwig") || p.includes("silverfish") || p.includes("slug") || p.includes("snail")){
+      return `Niban Granules were selected because the product is labeled for several crawling pests including crickets, earwigs, silverfish, slugs, and snails. Placement should be focused near activity, entry points, and protected harborage areas where pests are likely to forage.`;
+    }
+
+    if(p.includes("fire ant")){
+      return `Niban was selected in the materials list, but it should not be relied on as the primary fire ant product unless the label specifically supports the intended use. Fire ant work is usually better handled with products specifically labeled for fire ant mound or broadcast applications.`;
+    }
+
+    return `Niban Granules were selected as a 5% orthoboric acid granular bait for labeled crawling pests. It is best used near active foraging areas, entry points, wall voids, under cabinets or appliances, and other protected harborage areas according to label directions.`;
+  }
+
+  if(m.includes("intice") || m.includes("advance") || m.includes("maxforce complete")){
+    if(antActive){
+      return `Ant activity was documented. This bait was selected for active foraging trails and harborage areas. Baiting is useful because ants collect the material and share it with nestmates, supporting control beyond only the visible ants. Avoid applying repellent sprays directly over trails or bait placements so the bait remains attractive.`;
+    }
+
+    if(roachActive){
+      return `Roach activity was documented. This bait was selected to place control directly in feeding and harborage zones. Baits are useful around cracks, crevices, cabinets, appliances, utility areas, and other locations where roaches forage while limiting broad surface application.`;
+    }
+
+    return `Selected as a bait treatment for foraging pests in documented activity areas. Bait placement should be focused where pests are actively feeding or traveling and should be protected from contamination.`;
+  }
+
+  if(m.includes("maxforce gel")){
+    if(roachActive){
+      return `Roach activity was documented. Maxforce Gel was selected as a targeted cockroach bait for cracks, crevices, cabinet voids, appliance areas, and other harborage zones. Gel bait allows precise placement where roaches are feeding or traveling and is especially useful when paired with sanitation, monitoring, and an IGR.`;
+    }
+
+    if(antActive){
+      return `Ant activity was documented. Maxforce Gel was selected as a targeted bait option for active trails and feeding areas where label directions allow. The goal is to place bait close to foraging activity so ants can feed and move material back toward the colony.`;
+    }
+
+    return `Selected as a targeted gel bait for cracks, crevices, and active foraging areas. Gel bait allows precise placement where pests are feeding or traveling.`;
+  }
+
+  if(m.includes("crossfire")){
+    return `Selected for bed bug activity because Crossfire is designed for direct and residual control on labeled bed bug harborage areas such as cracks, crevices, seams, tufts, bed frames, furniture joints, and other resting points. It is most effective when paired with a detailed inspection, preparation, and follow-up plan.`;
+  }
+
+  if(m.includes("wasp freeze")){
+    if(mudDauberActive){
+      return `Mud Dauber activity was documented. Wasp Freeze may be used when a live stinging insect concern needs quick knockdown according to label directions, but inactive Mud Dauber nests are often better handled by physical removal. Treating surrounding exterior resting or nesting-prone areas may help reduce future activity.`;
+    }
+
+    return `Selected for wasp or stinging insect activity because it provides fast knockdown for active nests or immediate pressure around eaves, entry points, and exterior areas. It is useful when activity is active and direct treatment is needed according to label directions.`;
+  }
+
+  if(m.includes("contrac") || m.includes("final bait")){
+    if(rodentActive){
+      return `Rodent activity was documented. This rodent bait was selected to help reduce rodent pressure as part of a bait-station program. Bait should be secured in tamper-resistant stations where required and paired with inspection, exclusion, sanitation, and monitoring.`;
+    }
+
+    return `Selected as a rodent bait for monitoring or rodent pressure around the property. Rodent bait should be secured and used according to label directions and company procedure.`;
+  }
+
+  if(m.includes("trelona")){
+    return `Selected as a termite bait because novaluron interferes with termite development and colony growth. This is appropriate for termite bait station programs when serviced according to label and company procedure.`;
+  }
+
+  if(m.includes("in2mix")){
+    if(mosquitoActive){
+      return `Mosquito activity was documented. In2Mix was selected for use in mosquito station programs to help reduce mosquito breeding pressure around the property. It supports control by targeting mosquitoes connected to breeding and resting sites as part of an ongoing station service program.`;
+    }
+
+    return `Selected for mosquito service because it is designed for use in mosquito station programs and helps reduce mosquito breeding pressure around the property.`;
+  }
+
+  if(m.includes("delta dust") || m.includes("tri die") || m.includes("alpine dust")){
+    if(waspActive || mudDauberActive){
+      return `Selected for protected cracks, crevices, voids, and harborage areas where stinging insects may enter, rest, or nest. Dust applications are useful in dry, protected spaces that are difficult to reach with liquid applications.`;
+    }
+
+    if(spiderActive){
+      return `Selected for cracks, crevices, wall voids, and protected harborage areas where spiders or their insect prey may hide. Dust applications are useful in dry, hard-to-reach spaces.`;
+    }
+
+    return `Selected for cracks, crevices, wall voids, and protected harborage areas where pests may hide or travel. Dust applications are useful in dry, hard-to-reach spaces.`;
+  }
+
+  if(m.includes("bora-care")){
+    return `Selected for wood-destroying insect or wood-protection situations because borate treatments are designed to protect wood from listed pests when applied according to label directions.`;
+  }
+
+  return `Selected because it was appropriate for the documented pest activity, severity level, and treatment areas. Product was applied according to label directions and company procedures to help reduce current pest pressure and prevent future activity.`;
+}
 function buildRationale(pestsUsed, materialsUsed, severity, interior, exterior, activity){
   if(!pestsUsed.length && !materialsUsed.length){
     return "Select at least one target pest and one material to generate a product rationale.";
